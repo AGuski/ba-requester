@@ -16,7 +16,10 @@ logging.basicConfig(level=logging.INFO)
 
 # URL and string to check
 url_to_check = os.environ.get('URL_TO_CHECK')
-string_to_find = os.environ.get('TARGET_STRING')
+strings_to_find = [
+    'Entschuldigung, es sind aktuell keine Termine für ihre Auswahl verfügbar',
+    'Die Terminverwaltung wird momentan gewartet'
+]
 
 # Email details - replace with your details
 sender_email = os.environ.get('EMAIL_SENDER')
@@ -52,7 +55,7 @@ def check_for_string():
     try:
         headers = {'User-Agent': user_agent}
         response = requests.get(url_to_check, headers=headers)
-        if string_to_find not in response.text:
+        if all(string not in response.text for string in strings_to_find):
             send_email()
     except Exception as e:
         logging.error(f"Error during HTTP request: {e}")
