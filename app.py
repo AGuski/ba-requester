@@ -47,8 +47,8 @@ def check_for_string():
     try:
         headers = {'User-Agent': user_agent}
         response = requests.get(url_to_check, headers=headers)
-        print(response.text)
         if string_to_find not in response.text:
+            print(response.text)
             send_email()
     except Exception as e:
         print(f"Error during HTTP request: {e}")
