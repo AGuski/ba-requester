@@ -6,11 +6,13 @@ import time
 import os
 import http.server
 import socketserver
+import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 
 load_dotenv()  # Load .env file variables into the environment
+logging.basicConfig(level=logging.INFO)
 
 # URL and string to check
 url_to_check = os.environ.get('URL_TO_CHECK')
@@ -40,23 +42,23 @@ def send_email():
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, message.as_string())
         server.quit()
-        print("Email sent successfully")
+        logging.info("Email sent successfully")
     except Exception as e:
-        print(f"Error sending email: {e}")
+        logging.error(f"Error sending email: {e}")
 
 # Function to check for the string in the HTTP response
 def check_for_string():
-    print("Checking...")
+    logging.info("Checking...")
     try:
         headers = {'User-Agent': user_agent}
         response = requests.get(url_to_check, headers=headers)
         if string_to_find not in response.text:
             send_email()
     except Exception as e:
-        print(f"Error during HTTP request: {e}")
+        logging.error(f"Error during HTTP request: {e}")
 
 # Schedule to run every 2 minutes
-schedule.every(10).seconds.do(check_for_string)
+schedule.every(2).minutes.do(check_for_string)
 
 # Initial check
 check_for_string()
@@ -78,7 +80,7 @@ Handler = HealthCheckHandler
 
 def start_server():
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print("serving at port", PORT)
+        logging.info(f"serving at port {PORT}")
         httpd.serve_forever()
 
 # Run the server in a separate thread
