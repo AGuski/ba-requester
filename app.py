@@ -1,8 +1,11 @@
+import threading
 import requests
 import smtplib
 import schedule
 import time
 import os
+import http.server
+import socketserver
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
@@ -53,10 +56,34 @@ def check_for_string():
         print(f"Error during HTTP request: {e}")
 
 # Schedule to run every 2 minutes
-schedule.every(2).minutes.do(check_for_string)
+schedule.every(10).seconds.do(check_for_string)
 
 # Initial check
 check_for_string()
+
+class HealthCheckHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/health':
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(b'OK')
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+# Start a simple server
+PORT = int(os.environ.get('PORT'))
+Handler = HealthCheckHandler
+
+def start_server():
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("serving at port", PORT)
+        httpd.serve_forever()
+
+# Run the server in a separate thread
+server_thread = threading.Thread(target=start_server)
+server_thread.start()
 
 # Keep running
 while True:
