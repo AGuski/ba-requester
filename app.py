@@ -18,7 +18,8 @@ logging.basicConfig(level=logging.INFO)
 url_to_check = os.environ.get('URL_TO_CHECK')
 strings_to_find = [
     'Entschuldigung, es sind aktuell keine Termine für ihre Auswahl verfügbar',
-    'Die Terminverwaltung wird momentan gewartet'
+    'Die Terminverwaltung wird momentan gewartet',
+    'Die Terminvereinbarung ist zur Zeit nicht möglich'
 ]
 
 # Email details - replace with your details
