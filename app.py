@@ -19,15 +19,15 @@ url_to_check = os.environ.get('URL_TO_CHECK')
 
 # Had to use a negative list first, because I didn't know how a free appointment page looked like.
 
-# strings_to_find = [
-#     'Entschuldigung, es sind aktuell keine Termine für ihre Auswahl verfügbar',
-#     'Die Terminverwaltung wird momentan gewartet',
-#     'Die Terminvereinbarung ist zur Zeit nicht möglich',
-#     '503 Backend fetch failed'
-# ]
+strings_to_find = [
+    'Entschuldigung, es sind aktuell keine Termine für ihre Auswahl verfügbar',
+    'Die Terminverwaltung wird momentan gewartet',
+    'Die Terminvereinbarung ist zur Zeit nicht möglich',
+    '503 Backend fetch failed'
+]
 
 # Positive string to find
-string_to_find = "Auswahl des Termins" # Found in page title
+# string_to_find = "Auswahl des Termins" # Found in page title
 
 # Email details - replace with your details
 sender_email = os.environ.get('EMAIL_SENDER')
@@ -63,8 +63,8 @@ def check_for_string():
     try:
         headers = {'User-Agent': user_agent}
         response = requests.get(url_to_check, headers=headers)
-        # if all(string not in response.text for string in strings_to_find):
-        if string_to_find in response.text:
+        if all(string not in response.text for string in strings_to_find):
+        # if string_to_find in response.text:
             send_email()
     except Exception as e:
         logging.error(f"Error during HTTP request: {e}")
